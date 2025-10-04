@@ -37,15 +37,6 @@ Ejecute el siguiente comando para crear un entorno aislado llamado `marco-bio-ia
 conda create --name marco-bio-ia python=3.9
 
 Active el entorno recién creado:
-
 conda activate marco-bio-ia
-Paso 3.3: Instalación de Dependencias
-
-Una vez implementado, el sistema se ejecuta a través de la terminal de comandos.
-Paso 4.1: Iniciar Sesión de Trabajo
-
-Active el entorno de trabajo:
-conda activate marco-bio-ia
-
 
 Este proyecto está distribuido bajo la licencia MIT. Consulte el archivo LICENSE para más detalles.
