@@ -1,7 +1,6 @@
 VALLY-Scan v1.4
 📄 Lea nuestro White Paper para una visión completa del proyecto.
 🔬 Lea nuestro Manuscrito Científico (Pre-print).
-
 Manual de Procedimientos: VALLY-Scan v1.4
 Autor: Lionell E. Nava Ramos
 Versión: 1.4 (Prototipo para el Premio Nacional de Inventiva Tecnológica 2025)
@@ -59,10 +58,9 @@ El reporte será guardado en una nueva carpeta llamada reportes.
 Ejemplos de Uso:
 code
 Bash
-# Analizar la proteasa del Dengue y mostrar en terminal
 python main.py --pdb_id 2fom
-
-# Analizar la proteasa del SARS-CoV-2 y generar un reporte en PDF
+code
+Bash
 python main.py --pdb_id 6lu7 --reporte
 Paso 4.3: Visualización de Ayuda
 Para ver todas las opciones y la descripción del programa, ejecute:
