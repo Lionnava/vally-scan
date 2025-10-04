@@ -9,7 +9,7 @@
 ## Manual de Procedimientos: VALLY-Scan v1.4
 
 **Autor:** Lionell E. Nava Ramos  
-**Versión:** 1.4 (Prototipo para el Premio Nacional de Inventiva Tecnológica 2025)  
+**Versión:** 1.4 (Prototipo Tecnológica 2025)  
 **Fecha:** Octubre 2024
 
 ### 1. Introducción y Propósito
