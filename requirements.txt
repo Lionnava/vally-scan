@@ -1,0 +1,5 @@
+prody
+numpy
+scipy
+reportlab
+matplotlib
