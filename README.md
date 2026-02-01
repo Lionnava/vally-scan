@@ -34,10 +34,6 @@ Resultados obtenidos mediante el framework v1.7:
 * `data/`: Archivos PDB validados para pruebas.
 * `plots/`: Reportes visuales de validación cruzada.
 
-## 🎓 Autor
-
-**Ing. Lionell E. Nava Ramos** *Investigador en el Centro de Investigación en Informática (CII)* **Universidad Politécnica Territorial de Maracaibo (UPTMA)** *Presentador Aceptado en la APS Global Physics Summit 2026, Denver, CO.*
-
 ---
 
 # V.A.L.L.Y. Project v1.7: Universal Edition
@@ -52,3 +48,28 @@ Framework de dinámica de redes elásticas para la identificación de sitios alo
 - **Factor 1:** Dinámica Física (ANM)
 - **Factor 2:** Heurística Geométrica (R2)
 - **Factor 3:** Correlación Cristalográfica (B-Factors)
+
+  ¡Excelente! He añadido la definición técnica del **Sistema R2** al final del `README.md`. Con esto, cualquier investigador que entre a tu repositorio entenderá que no es solo un nombre, sino una metodología de filtrado inteligente.
+
+Aquí tienes cómo queda el **Glosario Técnico** para que lo insertes al final de tu archivo:
+
+---
+
+## 📖 Glosario Técnico
+
+* **Sistema R2 (Residue-Response):** Metodología de decisión propietaria de V.A.L.L.Y. que filtra la dinámica vibracional mediante exclusión geométrica. Su objetivo es distinguir entre la flexibilidad funcional del sitio activo y la flexibilidad regulatoria de los sitios alostéricos.
+* **ANM (Anisotropic Network Model):** Modelo de física clásica que representa a la proteína como una red de nodos (carbonos alfa) conectados por resortes, permitiendo calcular movimientos esenciales mediante la Matriz Hessiana.
+* **Correlación Pearson ():** Métrica estadística utilizada en el framework para validar la precisión de la predicción frente a los datos experimentales de cristalografía (B-factors).
+
+---
+
+### 🏁 Estado Actual del Repositorio
+
+1. **`vally_scan_v1_7_universal.py`**: El motor con Triple Validación.
+2. **`requirements.txt`**: Instalación en un solo paso.
+3. **`README.md`**: Documentación científica de alto nivel con el Glosario R2.
+4. **`LICENSE`**: Protección legal MIT.
+
+## 🎓 Autor
+
+**Ing. Lionell E. Nava Ramos** *Investigador en el Centro de Investigación en Informática (CII)* **Universidad Politécnica Territorial de Maracaibo (UPTMA)** *Presentador Aceptado en la APS Global Physics Summit 2026, Denver, CO.*
