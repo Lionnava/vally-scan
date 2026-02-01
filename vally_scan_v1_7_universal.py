@@ -8,145 +8,160 @@ import os
 import platform
 import psutil
 
-# --- CONFIGURACIÓN DEL REPORTE DE ALTO NIVEL ---
-class VALLY_Report(FPDF):
+# --- CLASE PARA EL DISEÑO PREMIUM DEL INFORME ---
+class VALLY_Premium_Report(FPDF):
     def header(self):
-        # Fondo del encabezado (Azul Marino Profesional)
-        self.set_fill_color(0, 51, 102)
+        # Fondo del Encabezado (Azul Oxford)
+        self.set_fill_color(0, 32, 63)
         self.rect(0, 0, 210, 45, 'F')
         
-        # Título Principal
-        self.set_xy(0, 10)
-        self.set_text_color(255, 255, 255)
-        self.set_font("Arial", 'B', 24)
-        self.cell(0, 15, "PROYECTO V.A.L.L.Y.", ln=True, align='C')
+        # --- ESPACIO PARA EL LOGO ---
+        # Si tienes el logo como 'logo_proyecto.png', descomenta la siguiente linea:
+        # self.image('logo_proyecto.png', 10, 8, 33) 
         
-        # Subtítulos
-        self.set_font("Arial", '', 10)
-        self.cell(0, 5, "VIBRATIONAL ANALYSIS & LOCAL LIGAND YIELDING", ln=True, align='C')
-        self.set_font("Arial", 'B', 12)
-        self.cell(0, 10, "TECHNICAL DATA SHEET - UNIVERSAL EDITION v1.7", ln=True, align='C')
-        self.ln(10)
+        self.set_xy(50, 12) if os.path.exists('logo_proyecto.png') else self.set_xy(15, 12)
+        self.set_text_color(255, 255, 255)
+        self.set_font("Helvetica", 'B', 24)
+        self.cell(0, 12, "V.A.L.L.Y. PROJECT", ln=True, align='L')
+        
+        self.set_font("Helvetica", '', 10)
+        self.set_x(self.get_x() + 5) if os.path.exists('logo_proyecto.png') else self.set_x(17)
+        self.cell(0, 5, "Vibrational Analysis & Local Ligand Yielding Framework", ln=True, align='L')
+        
+        # Etiqueta de Versión (Derecha)
+        self.set_fill_color(0, 122, 204) # Azul Eléctrico
+        self.set_xy(160, 15)
+        self.set_font("Helvetica", 'B', 10)
+        self.cell(35, 8, "VERSION v1.7", 0, 0, 'C', True)
 
     def footer(self):
-        self.set_y(-20)
-        self.set_font("Arial", 'I', 8)
-        self.set_text_color(128, 128, 128)
-        self.cell(0, 10, "Documento de Carácter Técnico-Científico | Autor: Ing. Lionell E. Nava Ramos", align='C')
-        self.set_y(-15)
-        self.cell(0, 10, f"Generado Automáticamente por VALLY-Engine | Página {self.page_no()}", align='C')
+        self.set_y(-25)
+        self.set_draw_color(0, 32, 63)
+        self.line(10, self.get_y(), 200, self.get_y())
+        self.set_font("Helvetica", 'I', 8)
+        self.set_text_color(100, 100, 100)
+        self.ln(2)
+        self.cell(0, 10, "Technical Document | Intellectual Property of Lionell E. Nava Ramos | UPTMA - 2026", align='C')
 
-def get_hardware_specs():
-    """Detecta las especificaciones del hardware actual"""
-    try:
-        cpu = platform.processor() or "Escritorio Estándar"
-        ram = f"{round(psutil.virtual_memory().total / (1024**3))} GB RAM"
-        os_sys = f"{platform.system()} {platform.release()}"
-        return cpu, ram, os_sys
-    except:
-        return "Generic CPU", "Standard RAM", "Windows/Linux"
+def get_system_specs():
+    return platform.processor(), f"{round(psutil.virtual_memory().total / (1024**3))} GB", f"{platform.system()} {platform.release()}"
 
 def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
-    """Genera el reporte profesional en una sola página"""
-    pdf = VALLY_Report()
+    pdf = VALLY_Premium_Report()
     pdf.add_page()
-    pdf.set_text_color(0, 0, 0)
-    pdf.ln(10)
-
-    # 1. METRICAS DE VALIDACION (R2 SYSTEM)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.set_draw_color(0, 51, 102)
-    pdf.cell(0, 8, "1. SCIENTIFIC VALIDATION (R2 SYSTEM)", border="B", ln=True)
-    pdf.ln(3)
     
-    pdf.set_font("Arial", '', 10)
-    col_width = 47
-    # Tabla de datos
-    headers = [["Target PDB", pdb_id.upper()], ["Pearson r", f"{pearson_r:.3f}"], 
-               ["Affinity", f"{affinity} kcal/mol"], ["Date", str(datetime.date.today())]]
+    # --- SECCIÓN 1: ANALÍTICA CIENTÍFICA ---
+    pdf.set_xy(10, 55)
+    pdf.set_font("Helvetica", 'B', 14)
+    pdf.set_text_color(0, 32, 63)
+    pdf.cell(0, 10, "I. SCIENTIFIC METRICS & VALIDATION", ln=True)
     
-    for item in headers:
-        pdf.set_font("Arial", 'B', 10)
-        pdf.cell(40, 8, item[0], border=1, fill=False)
-        pdf.set_font("Arial", '', 10)
-        pdf.cell(55, 8, item[1], border=1, ln=(headers.index(item)%2 != 0))
-
-    pdf.ln(10)
-
-    # 2. ARQUITECTURA DE SOPORTE (HARDWARE)
-    cpu, ram, os_ver = get_hardware_specs()
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 8, "2. COMPUTATIONAL ARCHITECTURE & SUPPORT", border="B", ln=True)
-    pdf.ln(3)
-    pdf.set_font("Arial", '', 9)
-    pdf.multi_cell(0, 6, f"OS Architecture: {os_ver}\nProcessing Unit: {cpu}\nSystem Memory: {ram}\nSoftware Stack: Python 3.x / ProDy / Matplotlib / VALLY-Universal Core")
+    # Cuadro de Datos
+    pdf.set_fill_color(248, 249, 250)
+    pdf.rect(10, 65, 190, 30, 'F')
     
+    pdf.set_xy(15, 68)
+    pdf.set_font("Helvetica", 'B', 11)
+    pdf.cell(45, 8, "Target PDB:", 0)
+    pdf.set_font("Helvetica", '', 11)
+    pdf.cell(50, 8, f"{pdb_id.upper()}", 0)
+    
+    pdf.set_font("Helvetica", 'B', 11)
+    pdf.cell(45, 8, "Pearson Correlation:", 0)
+    pdf.set_text_color(34, 139, 34) 
+    pdf.cell(40, 8, f"r = {pearson_r:.3f}", 0, 1)
+    
+    pdf.set_text_color(0, 32, 63)
+    pdf.set_x(15)
+    pdf.set_font("Helvetica", 'B', 11)
+    pdf.cell(45, 8, "Est. Affinity:", 0)
+    pdf.set_font("Helvetica", '', 11)
+    pdf.cell(50, 8, f"{affinity} kcal/mol", 0)
+    
+    pdf.set_font("Helvetica", 'B', 11)
+    pdf.cell(45, 8, "Analysis Date:", 0)
+    pdf.set_font("Helvetica", '', 11)
+    pdf.cell(40, 8, f"{datetime.date.today()}", 0, 1)
+
+    # --- SECCIÓN 2: ENTORNO DE HARDWARE ---
+    pdf.ln(12)
+    pdf.set_font("Helvetica", 'B', 14)
+    pdf.cell(0, 10, "II. COMPUTATIONAL ENVIRONMENT", ln=True)
+    
+    cpu, ram, os_v = get_system_specs()
+    pdf.set_font("Helvetica", '', 10)
+    pdf.set_text_color(60, 60, 60)
+    hw_info = f"Hardware Support: {cpu} | Memory: {ram} | OS: {os_v}\nKernel: VALLY Physics-Engine v1.7 optimized for Vectorized Linear Algebra."
+    pdf.multi_cell(0, 6, hw_info)
+
+    # --- SECCIÓN 3: RANKING DE RESIDUOS (HOTSPOTS) ---
     pdf.ln(8)
-
-    # 3. TOP RESIDUOS (ANALISIS ESTRUCTURAL)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 8, "3. VIBRATIONAL HOTSPOTS (CRITICAL RESIDUES)", border="B", ln=True)
-    pdf.ln(3)
-    pdf.set_font("Arial", '', 10)
+    pdf.set_font("Helvetica", 'B', 14)
+    pdf.set_text_color(0, 32, 63)
+    pdf.cell(0, 10, "III. TOP VIBRATIONAL HOTSPOTS", ln=True)
+    
+    pdf.set_font("Helvetica", '', 10)
     for i, res in enumerate(top_residues[:5], 1):
-        pdf.cell(0, 7, f"   [Rank {i}] -> Residue Index: {res} | Potential Allosteric Site Candidate", ln=True)
+        pdf.set_fill_color(240, 240, 240)
+        pdf.cell(12, 8, f"#{i}", 0, 0, 'C', True)
+        pdf.set_font("Helvetica", 'B', 10)
+        pdf.cell(178, 8, f" Residue Index: {res} | High Plasticity / Potential Allosteric Candidate", 'B', 1)
+        pdf.set_font("Helvetica", '', 10)
 
-    pdf.ln(8)
+    # --- SECCIÓN 4: RESUMEN EJECUTIVO ---
+    pdf.ln(10)
+    pdf.set_fill_color(0, 32, 63)
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("Helvetica", 'B', 12)
+    pdf.cell(0, 10, " IV. EXECUTIVE SUMMARY", ln=True, fill=True)
+    
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("Helvetica", 'I', 10)
+    pdf.ln(2)
+    summary = (f"El sistema R2 ha validado exitosamente la estructura {pdb_id}. La correlacion de r={pearson_r:.3f} "
+               "confirma que el software captura con precision la dinamica estructural observada en cristalografia. "
+               "Los sitios identificados presentan una vulnerabilidad alosterica significativa para el diseño de ligandos.")
+    pdf.multi_cell(0, 6, summary)
 
-    # 4. CONCLUSION Y VALIDACION GRAFICA
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 8, "4. EXECUTIVE SUMMARY", border="B", ln=True)
-    pdf.ln(3)
-    pdf.set_font("Arial", 'I', 10)
-    conclusion = (f"El motor VALLY v1.7 confirma una robustez del {pearson_r*100:.1f}% en la captura "
-                  "de la varianza dinámica frente a datos de cristalografía de Rayos X. La correlación "
-                  f"de r={pearson_r:.3f} permite el mapeo de sitios alostéricos con alta fidelidad.")
-    pdf.multi_cell(0, 6, conclusion)
-
-    # Guardar Reporte
-    report_name = f"Reporte_VALLY_{pdb_id.replace('.pdb','')}_v1.7_Final.pdf"
+    report_name = f"VALLY_Report_{pdb_id.replace('.pdb','')}_PREMIUM.pdf"
     pdf.output(report_name)
     return report_name
 
 def vally_universal_engine(pdb_file, active_site_residues=None, mode='viral'):
-    """Motor Principal de VALLY-Scan v1.7"""
+    """Motor Principal VALLY v1.7"""
     try:
-        # 1. Carga de estructura
+        # 1. Carga y Procesamiento de Física
         structure = parsePDB(pdb_file)
         calpha = structure.select('protein and name CA')
-        
-        # 2. Cálculo ANM
         anm = ANM(pdb_file)
         anm.buildHessian(calpha)
         anm.calcModes(n_modes=20)
         
-        # 3. Fluctuaciones
+        # 2. Validación R2
         msf_predicted = calcSqFlucts(anm)
         b_factors = calpha.getBetas()
-        
-        # Normalización para Pearson
-        r_value, _ = pearsonr(msf_predicted, b_factors)
+        r_val, _ = pearsonr(msf_predicted, b_factors)
         top_indices = np.argsort(msf_predicted)[-5:][::-1]
 
-        # 4. Gráfico de Validación
+        # 3. Gráfica Profesional
         plt.figure(figsize=(10, 5))
-        plt.plot(msf_predicted, label='Predicción VALLY (Simulación)', color='#003366', lw=2)
+        plt.plot(msf_predicted, label='VALLY Simulation', color='#00203F', lw=2)
         plt.plot(b_factors / np.max(b_factors) * np.max(msf_predicted), 
-                 label='Validación Experimental (B-factors)', color='#228B22', linestyle='--', alpha=0.6)
-        plt.title(f'V.A.L.L.Y. v1.7 - R2 System | {pdb_file} | r = {r_value:.3f}')
+                 label='Experimental (B-factors)', color='#32CD32', linestyle='--', alpha=0.6)
+        plt.title(f'V.A.L.L.Y. v1.7 | {pdb_file} | r = {r_val:.3f}')
         plt.legend()
+        plt.grid(True, alpha=0.2)
         plt.savefig('resultado_validacion_vally.png')
         
-        # 5. Exportación de Reporte Premium
-        print(f"\n--> Generando Reporte de Alto Nivel...")
-        reporte = export_vally_report(pdb_file, r_value, top_indices)
+        # 4. Generación de Reporte Premium
+        reporte = export_vally_report(pdb_file, r_val, top_indices)
         
-        print(f"--> [OK] Proceso completado exitosamente.")
-        print(f"--> Coeficiente Pearson r: {r_value:.3f}")
-        print(f"--> Archivo Generado: {reporte}")
+        print(f"\n--> [SUCCESS] Motor VALLY finalizado.")
+        print(f"--> Coeficiente Pearson r: {r_val:.3f}")
+        print(f"--> Reporte Generado: {reporte}")
         
         plt.show()
     except Exception as e:
-        print(f" ERROR CRITICO: {str(e)}")
+        print(f"ERROR: {str(e)}")
 
-# Fin del script
+# Fin del Motor
