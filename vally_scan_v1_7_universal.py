@@ -8,7 +8,7 @@ import os
 import platform
 import psutil
 
-# --- CLASE DE DISEÑO PREMIUM CON PROTECCIÓN ---
+# --- CLASE DE DISEÑO PREMIUM OPTIMIZADA ---
 class VALLY_Premium_Report(FPDF):
     def __init__(self):
         super().__init__()
@@ -19,23 +19,24 @@ class VALLY_Premium_Report(FPDF):
         self.set_fill_color(0, 32, 63)
         self.rect(0, 0, 210, 45, 'F')
         
-        # Inserción del Logo
+        logo_existe = False
         if os.path.exists(self.logo_path):
-            self.image(self.logo_path, 12, 10, 28)
-            self.set_xy(45, 12)
-        else:
-            self.set_xy(12, 12)
+            try:
+                self.image(self.logo_path, 12, 10, 28)
+                logo_existe = True
+            except:
+                pass # Salta si el formato de imagen es inválido
             
-        # Títulos Blancos
+        self.set_xy(45, 12) if logo_existe else self.set_xy(12, 12)
         self.set_text_color(255, 255, 255)
         self.set_font("Helvetica", 'B', 24)
         self.cell(0, 12, "V.A.L.L.Y. PROJECT", ln=True, align='L')
         
         self.set_font("Helvetica", '', 10)
-        self.set_x(45 if os.path.exists(self.logo_path) else 15)
+        if logo_existe: self.set_x(45)
         self.cell(0, 5, "Vibrational Analysis & Local Ligand Yielding Framework", ln=True, align='L')
         
-        # Badge de Versión v1.7
+        # Badge de Versión
         self.set_fill_color(0, 122, 204)
         self.set_xy(160, 15)
         self.set_font("Helvetica", 'B', 10)
@@ -48,15 +49,14 @@ class VALLY_Premium_Report(FPDF):
         self.set_font("Helvetica", 'I', 8)
         self.set_text_color(100, 100, 100)
         self.ln(2)
-        self.cell(0, 10, "Documento Técnico | Propiedad Intelectual de Lionell E. Nava Ramos | UPTMA - 2026", align='C')
+        self.cell(0, 10, "Technical Document | Intellectual Property of Lionell E. Nava Ramos | UPTMA - 2026", align='C')
 
-    def add_watermark(self):
-        # Marca de agua de seguridad
-        self.set_font('Helvetica', 'B', 45)
-        self.set_text_color(242, 242, 242) # Gris ultra tenue
-        # Guardar estado actual
-        with self.rotation(45, 105, 148):
-            self.text(40, 190, "VALLY PROJECT - CONFIDENCIAL")
+    def add_security_watermark(self):
+        # Marca de agua horizontal sutil (Evita errores de rotación)
+        self.set_font('Helvetica', 'B', 35)
+        self.set_text_color(245, 245, 245)
+        self.set_xy(0, 140)
+        self.cell(210, 20, "VALLY PROJECT - CONFIDENTIAL DATA", 0, 0, 'C')
 
 def get_system_specs():
     cpu = platform.processor() or "CPU Estándar x86_64"
@@ -67,11 +67,9 @@ def get_system_specs():
 def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
     pdf = VALLY_Premium_Report()
     pdf.add_page()
+    pdf.add_security_watermark()
     
-    # 0. Agregar Marca de Agua
-    pdf.add_watermark()
-    
-    # --- SECCIÓN 1: MÉTRICAS CIENTÍFICAS ---
+    # --- I. SCIENTIFIC METRICS ---
     pdf.set_xy(10, 55)
     pdf.set_font("Helvetica", 'B', 14)
     pdf.set_text_color(0, 32, 63)
@@ -103,7 +101,7 @@ def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
     pdf.set_font("Helvetica", '', 11)
     pdf.cell(40, 8, f"{datetime.date.today()}", 0, 1)
 
-    # --- SECCIÓN 2: ARQUITECTURA COMPUTACIONAL ---
+    # --- II. COMPUTATIONAL ARCHITECTURE ---
     pdf.ln(12)
     pdf.set_font("Helvetica", 'B', 14)
     pdf.cell(0, 10, "II. COMPUTATIONAL ENVIRONMENT & HARDWARE", ln=True)
@@ -114,7 +112,7 @@ def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
     hw_info = f"Operating System: {os_v}\nProcessor Unit: {cpu}\nSystem Memory: {ram}\nSoftware Core: Python 3.x / Vectorized Physics Engine v1.7"
     pdf.multi_cell(0, 6, hw_info)
 
-    # --- SECCIÓN 3: RANKING DE RESIDUOS ---
+    # --- III. TOP VIBRATIONAL HOTSPOTS ---
     pdf.ln(8)
     pdf.set_font("Helvetica", 'B', 14)
     pdf.set_text_color(0, 32, 63)
@@ -127,7 +125,7 @@ def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
         pdf.set_font("Helvetica", 'B', 10)
         pdf.cell(178, 8, f" Residue Index: {res} | Plasticity Zone | Allosteric Candidate", 'B', 1)
 
-    # --- SECCIÓN 4: RESUMEN EJECUTIVO ---
+    # --- IV. EXECUTIVE SUMMARY ---
     pdf.ln(10)
     pdf.set_fill_color(0, 32, 63)
     pdf.set_text_color(255, 255, 255)
@@ -138,8 +136,7 @@ def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
     pdf.set_font("Helvetica", 'I', 10)
     pdf.ln(2)
     summary = (f"El sistema R2 ha validado exitosamente la estructura {pdb_id}. La correlacion de r={pearson_r:.3f} "
-               "confirma que el software captura con precision la dinamica estructural observada en cristalografia. "
-               "Este nivel de robustez estadistica permite el mapeo de sitios alostericos con alta fidelidad cientifica.")
+               "confirma que el software captura con precision la dinamica estructural observada en cristalografia.")
     pdf.multi_cell(0, 6, summary)
 
     report_name = f"VALLY_Report_{pdb_id.replace('.pdb','')}_v1.7_PROTECTED.pdf"
@@ -148,7 +145,6 @@ def export_vally_report(pdb_id, pearson_r, top_residues, affinity="-10.64"):
 
 def vally_universal_engine(pdb_file, active_site_residues=None, mode='viral'):
     try:
-        # Procesamiento
         structure = parsePDB(pdb_file)
         calpha = structure.select('protein and name CA')
         anm = ANM(pdb_file)
@@ -161,7 +157,6 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='viral'):
         r_val, _ = pearsonr(msf_predicted, b_factors)
         top_indices = np.argsort(msf_predicted)[-5:][::-1]
 
-        # Gráfico
         plt.figure(figsize=(10, 5))
         plt.plot(msf_predicted, label='VALLY Simulation', color='#00203F', lw=2)
         plt.plot(b_factors / np.max(b_factors) * np.max(msf_predicted), 
@@ -170,11 +165,10 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='viral'):
         plt.legend()
         plt.savefig('resultado_validacion_vally.png')
         
-        # Reporte
+        print(f"\n--> Generando Reporte Premium v1.7...")
         nombre_reporte = export_vally_report(pdb_file, r_val, top_indices)
         
-        print(f"\n--> [SUCCESS] Ejecucion finalizada.")
-        print(f"--> Validacion Pearson r: {r_val:.3f}")
+        print(f"--> [SUCCESS] Ejecucion finalizada correctamente.")
         print(f"--> Reporte Generado: {nombre_reporte}")
         
         plt.show()
