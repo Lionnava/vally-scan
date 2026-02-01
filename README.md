@@ -1,4 +1,12 @@
-V.A.L.L.Y. Project: Universal Computational Framework (v1.7)Redefining Agility in Drug Discovery and Materials Science🔬 OverviewV.A.L.L.Y. (Vibrational Analysis for Ligand Likelihood Yielding) is an ultra-fast computational engine designed to identify critical dynamic sites in complex structures. By integrating Anisotropic Network Models (ANM) with a proprietary Triple-Factor Validation logic, the framework bridges the gap between theoretical physics and experimental crystallography.🚀 Key Features (v1.7 Universal Edition)Triple-Factor Validation System (R2):Physics Engine: Calculates intrinsic dynamics using the Hessian Matrix.Informed Heuristics: Automatically discriminates between catalytic and allosteric sites using geometric exclusion.Experimental Ground Truth: Real-time correlation ($r$) with crystallographic B-factors.Universal Core: Support for both Viral Proteases (SARS-CoV-2, Dengue) and Mineral/Crystalline Structures.Extreme Performance: Analysis completed in seconds on standard consumer hardware (Core i3, 8GB RAM).🛠 Installation & Usage
+V.A.L.L.Y. Project: Universal Computational Framework (v1.7)
+Redefining Agility in Drug Discovery and Materials Science
+
+🔬 Overview
+V.A.L.L.Y. (Vibrational Analysis for Ligand Likelihood Yielding) is an ultra-fast computational engine designed to identify critical dynamic sites in complex structures. 
+By integrating Anisotropic Network Models (ANM) with a proprietary Triple-Factor Validation logic, the framework bridges the gap between theoretical physics and experimental crystallography.
+
+🚀 Key Features (v1.7 Universal Edition)Triple-Factor Validation System (R2):Physics Engine: 
+Calculates intrinsic dynamics using the Hessian Matrix.Informed Heuristics: Automatically discriminates between catalytic and allosteric sites using geometric exclusion.Experimental Ground Truth: Real-time correlation ($r$) with crystallographic B-factors.Universal Core: Support for both Viral Proteases (SARS-CoV-2, Dengue) and Mineral/Crystalline Structures.Extreme Performance: Analysis completed in seconds on standard consumer hardware (Core i3, 8GB RAM).
 
 # Clone the repository
 git clone https://github.com/Lionnava/vally-scan.git
