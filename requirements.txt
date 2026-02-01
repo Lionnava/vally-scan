@@ -1,5 +1,17 @@
-prody
-numpy
-scipy
-reportlab
-matplotlib
+# V.A.L.L.Y. Project - Core Dependencies
+# Framework: Universal Edition v1.7
+# Autor: Ing. Lionell E. Nava Ramos
+
+# Análisis Estructural y Biofísica
+prody>=2.4.1
+
+# Procesamiento Numérico y Datos
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Visualización Científica
+matplotlib>=3.7.0
+
+# Utilidades de Red (Opcional, para descarga de PDBs)
+requests>=2.28.0
