@@ -3,92 +3,92 @@ import pandas as pd
 from prody import *
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
-import os
+from scipy.stats import pearsonr
 
 """
-VALLY-Scan v1.6: Framework Computacional de Doble Factor (R2)
+VALLY-Scan v1.6 (Summit Edition 2026)
 Autor: Ing. Lionell E. Nava Ramos
-Descripción: Implementación de Heurística Informada para la detección 
-automática de sitios alostéricos combinando Dinámica ANM y Geometría.
+Metodología: Triple Factor de Validación
+1. Dinámica Física (ANM)
+2. Heurística Geométrica (Exclusión Alostérica)
+3. Validación Cristalográfica (B-Factors)
 """
 
-def vally_framework_execution(pdb_id, active_site_list):
-    print(f"\n--- Iniciando VALLY-Scan v1.6 para: {pdb_id} ---")
+def vally_triple_factor_analysis(pdb_file, active_site_residues):
+    print(f"\n=== Iniciando Análisis de Triple Factor: {pdb_file} ===")
     
-    # 1. Carga de estructura y Modelo de Red Anisotrópica (ANM)
-    structure = parsePDB(pdb_id)
+    # --- FACTOR 1: Dinámica Física (ANM) ---
+    structure = parsePDB(pdb_file)
     calpha = structure.select('protein and name CA')
-    anm = ANM(pdb_id)
+    anm = ANM(pdb_file)
     anm.buildHessian(calpha)
     anm.calcModes(n_modes=20)
     
-    # 2. Cálculo de Fluctuaciones (Factor 1: Dinámica Física)
-    msf = list(abs(anm.getMSFs()))
+    msf_predicted = anm.getMSFs()
     residues = calpha.getResnums()
     coords = calpha.getCoords()
     
-    # 3. Módulo de Heurística de Doble Factor (R2) - NUEVO
-    # Extraemos coordenadas del sitio activo para calcular distancias
+    # --- FACTOR 3: Validación Cristalográfica (B-Factors) ---
+    # Extraemos la vibración real medida en el experimento de Rayos X
+    b_factors_experimental = calpha.getBetas()
+    
+    # Calcular Correlación de Pearson (r) entre Predicción vs Realidad
+    correlation, _ = pearsonr(msf_predicted, b_factors_experimental)
+    print(f"[VALIDACIÓN] Correlación con Cristalografía (Pearson r): {correlation:.2f}")
+
+    # --- FACTOR 2: Heurística de Exclusión Alostérica ---
     active_coords = []
-    for res_num in active_site_list:
+    for res_num in active_site_residues:
         sel = calpha.select(f'resnum {res_num}')
         if sel:
             active_coords.append(sel.getCoords()[0])
-    
     active_coords = np.array(active_coords)
+
+    msf_threshold = np.percentile(msf_predicted, 85)
+    dist_threshold = 15.0
     
-    # Umbrales para la IA/Heurística
-    msf_threshold = np.percentile(msf, 85) # Top 15% de flexibilidad
-    dist_threshold = 15.0 # Mínimo 15 Amstrongs del sitio activo
-    
-    allosteric_candidates = []
-    
-    print("Analizando picos de flexibilidad y exclusión geométrica...")
-    
+    allosteric_results = []
     for i in range(len(residues)):
-        res_flex = msf[i]
-        res_coord = coords[i].reshape(1, -1)
+        min_dist = np.min(cdist(coords[i].reshape(1, -1), active_coords))
         
-        # Calcular distancia mínima al sitio catalítico
-        min_dist = np.min(cdist(res_coord, active_coords))
-        
-        # Lógica de Doble Factor
-        if res_flex >= msf_threshold and min_dist > dist_threshold:
-            allosteric_candidates.append({
+        # Filtro de Doble Factor: Mucha flexibilidad + Lejos del sitio activo
+        if msf_predicted[i] >= msf_threshold and min_dist > dist_threshold:
+            allosteric_results.append({
                 'Residuo': residues[i],
                 'Nombre': calpha[i].getResname(),
-                'Flexibilidad': round(res_flex, 4),
+                'MSF_Pred': round(msf_predicted[i], 4),
+                'B-Factor_Exp': round(b_factors_experimental[i], 2),
                 'Distancia_Activo': round(min_dist, 2)
             })
 
-    # 4. Generación de Reporte y Validación
-    df_results = pd.DataFrame(allosteric_candidates)
-    df_results = df_results.sort_values(by='Flexibilidad', ascending=False)
+    # --- SALIDA Y GRAFICACIÓN ---
+    df_allosteric = pd.DataFrame(allosteric_results).sort_values(by='MSF_Pred', ascending=False)
     
-    print("\n[RESULTADO] Sitios Alostéricos Potenciales Detectados:")
-    print(df_results.head(5))
-    
-    # Graficar resultados para validación visual (Poster Denver 2026)
-    plt.figure(figsize=(10, 6))
-    plt.plot(residues, msf, label='Flexibilidad Intrínseca (ANM)', color='blue')
-    plt.axhline(y=msf_threshold, color='red', linestyle='--', label='Umbral Alostérico')
-    plt.title(f'VALLY-Scan v1.6: Análisis de Doble Factor - {pdb_id}')
-    plt.xlabel('Número de Residuo')
-    plt.ylabel('MSF (Fluctuación)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.savefig(f'Validacion_VALLY_{pdb_id}.png')
-    
-    return df_results
+    # Gráfica de Triple Validación para el Poster de Denver
+    fig, ax1 = plt.subplots(figsize=(12, 6))
 
-# --- EJECUCIÓN DE PRUEBA (Basado en tus datos validados) ---
-if __name__ == "__main__":
-    # Caso 1: SARS-CoV-2 (6LU7) - Sitio activo aprox. 41, 145, 163
-    # Tus reportes validados muestran picos en 277, 278, 279
-    active_6lu7 = [41, 144, 145, 163, 164]
-    resultados_covid = vally_framework_execution('6LU7.pdb', active_6lu7)
+    ax1.set_xlabel('Número de Residuo')
+    ax1.set_ylabel('MSF (Predicción VALLY)', color='blue')
+    ax1.plot(residues, msf_predicted, label='Predicción Física (ANM)', color='blue', alpha=0.7)
+    ax1.tick_params(axis='y', labelcolor='blue')
+
+    ax2 = ax1.twinx()
+    ax2.set_ylabel('B-Factors (Cristalografía Real)', color='green')
+    ax2.plot(residues, b_factors_experimental, label='Realidad Experimental', color='green', linestyle='--', alpha=0.5)
+    ax2.tick_params(axis='y', labelcolor='green')
+
+    plt.title(f'Triple Validación VALLY-Scan: {pdb_file}\nPearson r = {correlation:.2f}')
+    fig.tight_layout()
+    plt.savefig(f'Triple_Validacion_{pdb_file}.png')
     
-    # Caso 2: Dengue (2FOM) - Sitio activo aprox. 135, 157, 75
-    # Tus reportes muestran picos en 43, 44, 45
-    active_2fom = [75, 135, 157]
-    resultados_dengue = vally_framework_execution('2fom.pdb', active_2fom)
+    print("\n--- Top Candidatos Alostéricos Detectados ---")
+    print(df_results_summary := df_allosteric.head(5))
+    
+    return correlation, df_allosteric
+
+if __name__ == "__main__":
+    # Prueba con SARS-CoV-2 (6LU7)
+    r_6lu7, sitios_6lu7 = vally_triple_factor_analysis('6LU7.pdb', [41, 144, 145, 163])
+    
+    # Prueba con Dengue (2fom)
+    r_2fom, sitios_2fom = vally_triple_factor_analysis('2fom.pdb', [75, 135, 157])
