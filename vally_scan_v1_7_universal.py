@@ -31,7 +31,7 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='viral'):
     anm.buildHessian(nodes)
     anm.calcModes(n_modes=20)
     
-    msf_predicted = anm.getMSFs()
+    msf_predicted = anm.getMSF()
     node_indices = nodes.getResnums() if mode == 'viral' else np.arange(len(nodes))
     coords = nodes.getCoords()
     
