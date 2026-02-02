@@ -9,15 +9,15 @@ import os
 import platform
 import psutil
 
-# --- 1. GESTIÓN AUTOMÁTICA DE DIRECTORIOS (Sin Mutilaciones) ---
+# --- 1. INFRAESTRUCTURA AUTOMÁTICA ---
 def setup_vally_environment():
-    # Estructura de carpetas aprobada para el Proyecto Vally
+    """Garantiza la existencia de las carpetas Plots, Reports y Database"""
     carpetas = ['Input_PDB', 'Reports', 'Plots', 'Database']
     for folder in carpetas:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-# --- 2. MOTOR DE RENDERIZADO PREMIUM (Identidad Visual Corporativa) ---
+# --- 2. DISEÑO PREMIUM DE VANGUARDIA (Identidad Proyecto Vally) ---
 class VALLY_Premium_Report(FPDF):
     def __init__(self, pdb_id):
         super().__init__()
@@ -25,7 +25,7 @@ class VALLY_Premium_Report(FPDF):
         self.logo_path = 'logo_proyecto.png'
 
     def header(self):
-        # Banners Sólidos según captura aprobada
+        # Banners Sólidos (Captura Aprobada)
         self.set_fill_color(0, 32, 63); self.rect(0, 0, 210, 45, 'F')
         self.set_fill_color(0, 50, 90); self.rect(0, 45, 210, 8, 'F')
         self.set_xy(0, 46.5); self.set_text_color(255, 255, 255); self.set_font("Helvetica", 'B', 9)
@@ -45,13 +45,13 @@ class VALLY_Premium_Report(FPDF):
         self.set_font("Helvetica", 'I', 8); self.set_text_color(100); self.ln(2)
         self.cell(0, 10, "PROYECTO VALLY - PROPIEDAD INTELECTUAL DE LIONELL E. NAVA RAMOS", align='C')
 
-# --- 3. MOTOR DE ANÁLISIS UNIVERSAL v3.2.1 ---
+# --- 3. MOTOR UNIVERSAL (v3.2.1) ---
 def vally_universal_engine(pdb_file, active_site_residues=None, mode='universal'):
     try:
         setup_vally_environment()
         target = os.path.join('Input_PDB', pdb_file) if os.path.exists(os.path.join('Input_PDB', pdb_file)) else pdb_file
         
-        # Auditoría de Hardware
+        # Metadatos del Sistema
         info_sys = {
             'os': f"{platform.system()} {platform.release()}",
             'cpu': platform.processor(),
@@ -59,7 +59,7 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='universal'
             'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         }
 
-        # Núcleo de Física (ProDy)
+        # Núcleo ProDy (Física Blindada)
         struct = parsePDB(target)
         calpha = struct.select('protein and name CA')
         anm = ANM(pdb_file); anm.buildHessian(calpha)
@@ -69,23 +69,21 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='universal'
         r_val, _ = pearsonr(msf, b_factors)
         top_indices = np.argsort(msf)[-5:][::-1]
 
-        # Generación de Gráfico en /Plots
+        # Gráfico Científico
         plt.figure(figsize=(10, 5))
-        m_z = (msf - np.mean(msf)) / np.std(msf)
-        b_z = (b_factors - np.mean(b_factors)) / np.std(b_factors)
+        m_z = (msf - np.mean(msf)) / np.std(msf); b_z = (b_factors - np.mean(b_factors)) / np.std(b_factors)
         plt.plot(m_z, color='#00203F', label='Simulación VALLY (ANM)', lw=2)
-        plt.plot(b_z, color='#32CD32', label='Datos Experimentales', ls='--', alpha=0.6)
+        plt.plot(b_z, color='#32CD32', label='Datos Experimentales (PDB)', ls='--', alpha=0.6)
         plt.title(f"Validación VALLY-Scan | {pdb_file.upper()} | r = {round(r_val, 3)}")
         plt.legend(); plt.grid(True, alpha=0.2); plt.xlabel("Índice de Residuo")
         
         plot_path = os.path.join('Plots', f"Plot_{pdb_file[:-4]}.png")
         plt.savefig(plot_path, dpi=300); plt.close()
 
-        # Generación de Reporte en /Reports
+        # Reporte PDF (Enriquecido)
         pdf = VALLY_Premium_Report(pdb_file.upper())
         pdf.add_page(); pdf.set_xy(10, 60)
         
-        # Sección Técnica y Hardware
         pdf.set_font("Helvetica", 'B', 14); pdf.set_text_color(0, 32, 63)
         pdf.cell(0, 10, "I. SCIENTIFIC VALIDATION & HARDWARE LOG", ln=True)
         pdf.set_font("Helvetica", '', 10); pdf.set_text_color(0, 0, 0)
@@ -93,19 +91,18 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='universal'
         pdf.cell(50, 7, "CPU Architecture:", 0); pdf.cell(0, 7, info_sys['cpu'], ln=True)
         pdf.cell(50, 7, "Memory RAM:", 0); pdf.cell(0, 7, info_sys['ram'], ln=True)
 
-        # Sección Hotspots
         pdf.ln(5); pdf.set_font("Helvetica", 'B', 14); pdf.set_text_color(0, 32, 63)
         pdf.cell(0, 10, "II. VIBRATIONAL HOTSPOTS MAPPING", ln=True)
         pdf.set_font("Helvetica", '', 10); pdf.set_text_color(0, 0, 0)
         for i, idx in enumerate(top_indices, 1):
             pdf.cell(0, 7, f"Rank {i} -> Residue: {idx} | Potential Allosteric Candidate", ln=True)
 
-        # Integración de Imagen en el Reporte
+        # Gráfico embebido
         pdf.ln(5); pdf.image(plot_path, x=15, y=pdf.get_y(), w=180)
 
         pdf.output(os.path.join('Reports', f"VALLY_Scan_Report_{pdb_file[:-4]}.pdf"))
 
-        # Actualización de Base de Datos
+        # Base de Datos (Trazabilidad)
         db_path = os.path.join('Database', 'VALLY_Scan_Master.csv')
         hot_str = "-".join(map(str, top_indices))
         with open(db_path, 'a', newline='') as f:
@@ -114,7 +111,7 @@ def vally_universal_engine(pdb_file, active_site_residues=None, mode='universal'
                 writer.writerow(['Timestamp', 'PDB', 'Pearson_R', 'Hotspots', 'CPU', 'RAM'])
             writer.writerow([info_sys['time'], pdb_file, round(r_val, 4), hot_str, info_sys['cpu'], info_sys['ram']])
 
-        print(f"--> [VALLY-SCAN] {pdb_file} procesado. Gráfico y Reporte actualizados.")
+        print(f"--> [VALLY-SCAN OK] {pdb_file} procesado bajo v1.7.4-Universal (Core v3.2.1)")
 
     except Exception as e:
-        print(f"--> [CRITICAL] Fallo en el motor: {str(e)}")
+        print(f"--> [ERROR] {str(e)}")
